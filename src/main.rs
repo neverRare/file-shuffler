@@ -23,9 +23,11 @@ fn main() -> io::Result<()> {
         .filter_map(Result::ok)
         .map(|dir| dir.path())
         .collect();
-    println!("found {} files", paths.len());
+    let len = paths.len();
+    println!("found {len} files");
+    println!("renamed 0/{len}");
     let mut rng = thread_rng();
-    for file in paths {
+    for (i, file) in paths.into_iter().enumerate() {
         let extension = file.extension();
         let new_path = loop {
             let mut name = base36(rng.gen_range(0..MAX));
@@ -34,11 +36,12 @@ fn main() -> io::Result<()> {
                 name.push(extension);
             }
             let path = full_path.join(name);
-            if path.try_exists()? {
+            if !path.try_exists()? {
                 break path;
             }
         };
         rename(file, new_path)?;
+        println!("renamed {i}/{len}");
     }
     Ok(())
 }
