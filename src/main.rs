@@ -61,11 +61,10 @@ fn main() -> io::Result<()> {
             }
         };
         rename(path, new_path)?;
-        PROGRESS.store(i, Ordering::Relaxed);
+        PROGRESS.store(i + 1, Ordering::Relaxed);
     }
     DONE.store(true, Ordering::Relaxed);
-    println!();
-    println!("done renaming");
+    println!("\rRenamed {len} / {len} files");
     Ok(())
 }
 fn base36(mut x: u128, extension_len: usize) -> OsString {
