@@ -1,11 +1,7 @@
 use clap::Parser;
 use rand::{thread_rng, Rng};
 use std::{
-    env::current_dir,
-    ffi::{OsStr, OsString},
-    fs::{read_dir, rename},
-    io::{self, stdout, Write},
-    path::PathBuf,
+    env::current_dir, ffi::{OsStr, OsString}, fs::{read_dir, rename}, io::{self, stdout, Write}, iter::repeat, path::PathBuf
 };
 
 const MAX: u128 = 170581728179578208256; // 36 ^ 13
@@ -52,7 +48,7 @@ fn main() -> io::Result<()> {
 }
 fn base36(mut x: u128, extension_len: usize) -> OsString {
     let mut result = Vec::with_capacity(13 + extension_len);
-    result.extend([0; 13]);
+    result.extend(repeat(0).take(13));
     for i in 0..13 {
         let m = (x % 36) as u8;
         x = x / 36;
