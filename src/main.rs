@@ -61,6 +61,6 @@ fn base36(mut x: u128) -> OsString {
         result.push(b'0');
     }
     result.reverse();
-    let string = unsafe {String::from_utf8_unchecked(result)};
+    let string = unsafe { String::from_utf8_unchecked(result) };
     string.into()
 }
