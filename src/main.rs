@@ -25,9 +25,9 @@ fn main() -> io::Result<()> {
         .collect();
     let len = paths.len();
     println!("found {len} files");
-    println!("renamed 0/{len}");
     let mut rng = thread_rng();
     for (i, file) in paths.into_iter().enumerate() {
+        println!("renaming {}/{len}", i);
         let extension = file.extension();
         let new_path = loop {
             let mut name = base36(rng.gen_range(0..MAX));
@@ -41,7 +41,6 @@ fn main() -> io::Result<()> {
             }
         };
         rename(file, new_path)?;
-        println!("renamed {i}/{len}");
     }
     Ok(())
 }
