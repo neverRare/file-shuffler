@@ -52,19 +52,13 @@ fn main() -> io::Result<()> {
 }
 fn base36(mut x: u128, extension_len: usize) -> OsString {
     let mut result = Vec::with_capacity(13 + extension_len);
-    loop {
+    result.extend([0; 13]);
+    for i in 0..13 {
         let m = (x % 36) as u8;
         x = x / 36;
         let byte = if m < 10 { b'0' + m } else { b'a' + m - 10 };
-        result.push(byte);
-        if x == 0 {
-            break;
-        }
+        result[13 - i - 1] = byte;
     }
-    while result.len() < 13 {
-        result.push(b'0');
-    }
-    result.reverse();
     let string = unsafe { String::from_utf8_unchecked(result) };
     string.into()
 }
