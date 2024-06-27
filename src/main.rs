@@ -2,7 +2,7 @@ use clap::Parser;
 use rand::{thread_rng, Rng};
 use std::{
     env::current_dir,
-    ffi::OsString,
+    ffi::{OsStr, OsString},
     fs::{read_dir, rename},
     io::{self, stdout, Write},
     path::PathBuf,
@@ -30,8 +30,12 @@ fn main() -> io::Result<()> {
         print!("\rrenaming {}/{len}", i);
         stdout().flush()?;
         let extension = file.extension();
+        let extension_len = extension
+            .map(OsStr::len)
+            .map(|len| len + 1)
+            .unwrap_or_default();
         let new_path = loop {
-            let mut name = base36(rng.gen_range(0..MAX));
+            let mut name = base36(rng.gen_range(0..MAX), extension_len);
             if let Some(extension) = extension {
                 name.push(".");
                 name.push(extension);
@@ -46,8 +50,8 @@ fn main() -> io::Result<()> {
     println!();
     Ok(())
 }
-fn base36(mut x: u128) -> OsString {
-    let mut result = Vec::with_capacity(13);
+fn base36(mut x: u128, extension_len: usize) -> OsString {
+    let mut result = Vec::with_capacity(13 + extension_len);
     loop {
         let m = (x % 36) as u8;
         x = x / 36;
