@@ -6,13 +6,12 @@ use std::{
     fs::{read_dir, rename},
     io::{self, stdout, Write},
     path::PathBuf,
-    sync::atomic::{AtomicBool, AtomicUsize, Ordering},
+    sync::atomic::{AtomicUsize, Ordering},
     thread::{sleep, spawn},
     time::Duration,
 };
 
 const MAX: u128 = 170581728179578208256; // 36 ^ 13
-static DONE: AtomicBool = AtomicBool::new(false);
 static PROGRESS: AtomicUsize = AtomicUsize::new(0);
 
 /// Simple utility for randomizing file names
@@ -34,14 +33,11 @@ fn main() -> io::Result<()> {
     let mut rng = thread_rng();
     spawn(move || {
         sleep(Duration::from_secs(1));
-        while !DONE.load(Ordering::Relaxed) {
-            print!(
-                "\rRenamed {} / {len} files",
-                PROGRESS.load(Ordering::Relaxed)
-            );
-            stdout().flush().unwrap();
-            sleep(Duration::from_secs(1));
-        }
+        print!(
+            "\rRenamed {} / {len} files",
+            PROGRESS.load(Ordering::Relaxed)
+        );
+        stdout().flush().unwrap();
     });
     for (i, path) in paths.into_iter().enumerate() {
         let extension = path.extension();
@@ -63,7 +59,6 @@ fn main() -> io::Result<()> {
         rename(path, new_path)?;
         PROGRESS.store(i + 1, Ordering::Relaxed);
     }
-    DONE.store(true, Ordering::Relaxed);
     println!("\rRenamed {len} / {len} files");
     Ok(())
 }
