@@ -4,7 +4,7 @@ use std::{
     env::current_dir,
     ffi::OsString,
     fs::{read_dir, rename},
-    io,
+    io::{self, stdout, Write},
     path::PathBuf,
 };
 
@@ -27,7 +27,8 @@ fn main() -> io::Result<()> {
     println!("found {len} files");
     let mut rng = thread_rng();
     for (i, file) in paths.into_iter().enumerate() {
-        println!("renaming {}/{len}", i);
+        print!("\rrenaming {}/{len}", i);
+        stdout().flush()?;
         let extension = file.extension();
         let new_path = loop {
             let mut name = base36(rng.gen_range(0..MAX));
@@ -41,8 +42,8 @@ fn main() -> io::Result<()> {
             }
         };
         rename(file, new_path)?;
-        print!("\r");
     }
+    println!();
     Ok(())
 }
 fn base36(mut x: u128) -> OsString {
