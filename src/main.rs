@@ -41,6 +41,7 @@ fn main() -> io::Result<()> {
             }
         };
         rename(file, new_path)?;
+        print!("\r");
     }
     Ok(())
 }
