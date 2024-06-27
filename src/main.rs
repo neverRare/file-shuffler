@@ -54,7 +54,7 @@ fn main() -> io::Result<()> {
 }
 fn base36(mut x: u128, extension_len: usize) -> OsString {
     let mut result = Vec::with_capacity(13 + extension_len);
-    result.extend(repeat(0).take(13));
+    result.extend([0; 13]);
     for i in 0..13 {
         let m = (x % 36) as u8;
         x = x / 36;
