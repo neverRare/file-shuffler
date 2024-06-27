@@ -21,6 +21,7 @@ fn main() -> io::Result<()> {
     let path = Args::parse().path;
     let full_path = current_dir()?.join(path);
     let paths: Vec<_> = read_dir(&full_path)?
+        // TODO: errors shouldn't be ignored
         .filter_map(Result::ok)
         .map(|dir| dir.path())
         .collect();
