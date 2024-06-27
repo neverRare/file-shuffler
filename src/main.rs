@@ -35,7 +35,10 @@ fn main() -> io::Result<()> {
     spawn(move || {
         sleep(Duration::from_secs(1));
         while !DONE.load(Ordering::Relaxed) {
-            print!("\rRenamed {} / {len}", PROGRESS.load(Ordering::Relaxed));
+            print!(
+                "\rRenamed {} / {len} files",
+                PROGRESS.load(Ordering::Relaxed)
+            );
             stdout().flush().unwrap();
             sleep(Duration::from_secs(1));
         }
