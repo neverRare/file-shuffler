@@ -1,7 +1,12 @@
 use clap::Parser;
 use rand::{thread_rng, Rng};
 use std::{
-    env::current_dir, ffi::{OsStr, OsString}, fs::{read_dir, rename}, io::{self, stdout, Write}, iter::repeat, path::PathBuf
+    env::current_dir,
+    ffi::{OsStr, OsString},
+    fs::{read_dir, rename},
+    io::{self, stdout, Write},
+    iter::repeat,
+    path::PathBuf,
 };
 
 const MAX: u128 = 170581728179578208256; // 36 ^ 13
@@ -23,7 +28,7 @@ fn main() -> io::Result<()> {
     println!("found {len} files");
     let mut rng = thread_rng();
     for (i, file) in paths.into_iter().enumerate() {
-        print!("\rrenaming {}/{len}", i);
+        print!("\rrenaming {i}/{len}");
         stdout().flush()?;
         let extension = file.extension();
         let extension_len = extension
