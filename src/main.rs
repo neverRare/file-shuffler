@@ -5,7 +5,6 @@ use std::{
     ffi::{OsStr, OsString},
     fs::{read_dir, rename},
     io::{self, stdout, Write},
-    iter::repeat,
     path::PathBuf,
 };
 
