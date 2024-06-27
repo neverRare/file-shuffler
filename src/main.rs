@@ -6,9 +6,14 @@ use std::{
     fs::{read_dir, rename},
     io::{self, stdout, Write},
     path::PathBuf,
+    sync::atomic::{AtomicBool, AtomicUsize, Ordering},
+    thread::{sleep, spawn},
+    time::Duration,
 };
 
 const MAX: u128 = 170581728179578208256; // 36 ^ 13
+static DONE: AtomicBool = AtomicBool::new(false);
+static PROGRESS: AtomicUsize = AtomicUsize::new(0);
 
 /// Simple utility for randomizing file names
 #[derive(Parser, Debug)]
@@ -27,9 +32,15 @@ fn main() -> io::Result<()> {
     let len = paths.len();
     println!("found {len} files");
     let mut rng = thread_rng();
+    spawn(move || {
+        sleep(Duration::from_secs(1));
+        while !DONE.load(Ordering::Relaxed) {
+            print!("\rRenamed {} / {len}", PROGRESS.load(Ordering::Relaxed));
+            stdout().flush().unwrap();
+            sleep(Duration::from_secs(1));
+        }
+    });
     for (i, path) in paths.into_iter().enumerate() {
-        print!("\rrenaming {i}/{len}");
-        stdout().flush()?;
         let extension = path.extension();
         let extension_len = extension
             .map(OsStr::len)
@@ -47,8 +58,11 @@ fn main() -> io::Result<()> {
             }
         };
         rename(path, new_path)?;
+        PROGRESS.store(i, Ordering::Relaxed);
     }
+    DONE.store(true, Ordering::Relaxed);
     println!();
+    println!("done renaming");
     Ok(())
 }
 fn base36(mut x: u128, extension_len: usize) -> OsString {
