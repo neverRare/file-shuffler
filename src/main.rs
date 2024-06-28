@@ -28,8 +28,6 @@ fn main() -> ExitCode {
     setup_panic!();
     let path = Args::parse().path;
     let target = current_dir().unwrap().join(path);
-    // TODO: use try_collect if stable
-    let mut paths = Vec::new();
     let entries = match read_dir(&target) {
         Ok(entries) => entries,
         Err(err) => {
@@ -37,6 +35,8 @@ fn main() -> ExitCode {
             return ExitCode::FAILURE;
         }
     };
+    // TODO: use try_collect if stable
+    let mut paths = Vec::new();
     for entry in entries {
         paths.push(entry.unwrap().path());
     }
