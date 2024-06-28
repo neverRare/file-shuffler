@@ -55,12 +55,8 @@ fn main() -> ExitCode {
         .is_ok();
     for (i, path) in paths.into_iter().enumerate() {
         let extension = path.extension();
-        let extension_len = extension
-            .map(OsStr::len)
-            .map(|len| len + 1)
-            .unwrap_or_default();
         let new_path = loop {
-            let mut name = base36(rng.gen_range(0..MAX), extension_len);
+            let mut name = base36(rng.gen_range(0..MAX));
             if let Some(extension) = extension {
                 name.push(".");
                 name.push(extension);
@@ -81,9 +77,8 @@ fn main() -> ExitCode {
     println!("\rRenamed {len} / {len} files");
     ExitCode::SUCCESS
 }
-fn base36(mut x: u128, extension_len: usize) -> OsString {
-    let mut result = Vec::with_capacity(13 + extension_len);
-    result.extend([0; 13]);
+fn base36(mut x: u128) -> OsString {
+    let mut result = vec![0; 13];
     for i in 0..13 {
         let m = (x % 36) as u8;
         x /= 36;
