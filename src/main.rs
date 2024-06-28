@@ -9,7 +9,7 @@ use std::{
     path::PathBuf,
     process::ExitCode,
     sync::atomic::{AtomicUsize, Ordering},
-    thread::{sleep, spawn, Builder},
+    thread::{sleep, Builder},
     time::Duration,
 };
 
