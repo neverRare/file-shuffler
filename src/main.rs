@@ -35,11 +35,10 @@ fn main() -> ExitCode {
             return ExitCode::FAILURE;
         }
     };
-    // TODO: use try_collect if stable
-    let mut paths = Vec::new();
-    for entry in entries {
-        paths.push(entry.unwrap().path());
-    }
+    let paths: Vec<_> = entries
+        .map(Result::unwrap)
+        .map(|entry| entry.path())
+        .collect();
     let len = paths.len();
     println!("found {len} files");
     let mut rng = thread_rng();
