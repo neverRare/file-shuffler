@@ -40,7 +40,7 @@ fn main() -> ExitCode {
         .map(|entry| entry.path())
         .collect();
     let len = paths.len();
-    println!("found {len} files");
+    println!("Found {len} files");
     let mut rng = thread_rng();
     let tracked = Builder::new()
         .spawn(move || loop {
