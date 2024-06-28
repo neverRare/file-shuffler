@@ -8,7 +8,7 @@ use std::{
     path::PathBuf,
     process::ExitCode,
     sync::atomic::{AtomicUsize, Ordering},
-    thread::{sleep, spawn},
+    thread::{sleep, spawn, Builder},
     time::Duration,
 };
 
@@ -41,14 +41,16 @@ fn main() -> ExitCode {
     let len = paths.len();
     println!("found {len} files");
     let mut rng = thread_rng();
-    spawn(move || loop {
-        sleep(Duration::from_secs(1));
-        print!(
-            "\rRenamed {} / {len} files",
-            PROGRESS.load(Ordering::Relaxed)
-        );
-        stdout().flush().unwrap();
-    });
+    let tracked = Builder::new()
+        .spawn(move || loop {
+            sleep(Duration::from_secs(1));
+            print!(
+                "\rRenamed {} / {len} files",
+                PROGRESS.load(Ordering::Relaxed)
+            );
+            stdout().flush().unwrap();
+        })
+        .is_ok();
     for (i, path) in paths.into_iter().enumerate() {
         let extension = path.extension();
         let extension_len = extension
@@ -67,7 +69,12 @@ fn main() -> ExitCode {
             }
         };
         rename(path, new_path).unwrap();
-        PROGRESS.store(i + 1, Ordering::Relaxed);
+        if tracked {
+            PROGRESS.store(i + 1, Ordering::Relaxed);
+        } else {
+            print!("\rRenamed {} / {len} files", i + 1);
+            stdout().flush().unwrap();
+        }
     }
     println!("\rRenamed {len} / {len} files");
     ExitCode::SUCCESS
