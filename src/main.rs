@@ -3,7 +3,7 @@ use human_panic::setup_panic;
 use rand::{thread_rng, Rng};
 use std::{
     env::current_dir,
-    ffi::{OsStr, OsString},
+    ffi::OsString,
     fs::{read_dir, rename},
     io::{stdout, Write},
     path::PathBuf,
