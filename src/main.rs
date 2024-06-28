@@ -4,8 +4,9 @@ use std::{
     env::current_dir,
     ffi::{OsStr, OsString},
     fs::{read_dir, rename},
-    io::{self, stdout, Write},
+    io::{stdout, Write},
     path::PathBuf,
+    process::ExitCode,
     sync::atomic::{AtomicUsize, Ordering},
     thread::{sleep, spawn},
     time::Duration,
@@ -22,13 +23,20 @@ struct Args {
     /// not a file
     path: PathBuf,
 }
-fn main() -> io::Result<()> {
+fn main() -> ExitCode {
     let path = Args::parse().path;
-    let target = current_dir()?.join(path);
+    let target = current_dir().unwrap().join(path);
     // TODO: use try_collect if stable
     let mut paths = Vec::new();
-    for entry in read_dir(&target)? {
-        paths.push(entry?.path());
+    let entries = match read_dir(&target) {
+        Ok(entries) => entries,
+        Err(err) => {
+            eprintln!("unable to read {}: {}", target.display(), err);
+            return ExitCode::FAILURE;
+        }
+    };
+    for entry in entries {
+        paths.push(entry.unwrap().path());
     }
     let len = paths.len();
     println!("found {len} files");
@@ -54,15 +62,15 @@ fn main() -> io::Result<()> {
                 name.push(extension);
             }
             let path = target.join(name);
-            if !path.try_exists()? {
+            if !path.try_exists().unwrap() {
                 break path;
             }
         };
-        rename(path, new_path)?;
+        rename(path, new_path).unwrap();
         PROGRESS.store(i + 1, Ordering::Relaxed);
     }
     println!("\rRenamed {len} / {len} files");
-    Ok(())
+    ExitCode::SUCCESS
 }
 fn base36(mut x: u128, extension_len: usize) -> OsString {
     let mut result = Vec::with_capacity(13 + extension_len);
