@@ -14,10 +14,12 @@ use std::{
 const MAX: u128 = 170581728179578208256; // 36 ^ 13
 static PROGRESS: AtomicUsize = AtomicUsize::new(0);
 
-/// Simple utility for randomizing file names
+/// Simple utility for randomizing file names in order to shuffle the sort
+/// order
 #[derive(Parser, Debug)]
 struct Args {
-    /// The directory to randomize file names
+    /// The directory to randomize file names, must point to a directory and
+    /// not a file
     path: PathBuf,
 }
 fn main() -> io::Result<()> {
