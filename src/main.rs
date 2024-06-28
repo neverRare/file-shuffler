@@ -67,7 +67,7 @@ fn base36(mut x: u128, extension_len: usize) -> OsString {
     result.extend([0; 13]);
     for i in 0..13 {
         let m = (x % 36) as u8;
-        x = x / 36;
+        x /= 36;
         let byte = if m < 10 { b'0' + m } else { b'a' + m - 10 };
         result[13 - i - 1] = byte;
     }
