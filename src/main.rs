@@ -27,7 +27,7 @@ struct Args {
 fn main() -> ExitCode {
     setup_panic!();
     let path = Args::parse().path;
-    let target = current_dir().unwrap().join(path);
+    let target = current_dir().unwrap().join(&path);
     let entries = match read_dir(&target) {
         Ok(entries) => entries,
         Err(err) => {
@@ -66,7 +66,10 @@ fn main() -> ExitCode {
                 break path;
             }
         };
-        rename(path, new_path).unwrap();
+        if let Err(err) = rename(&path, &new_path) {
+            eprintln!("unable to rename {}: {}", path.display(), err);
+            return ExitCode::FAILURE;
+        }
         if tracked {
             PROGRESS.store(i + 1, Ordering::Relaxed);
         } else {
