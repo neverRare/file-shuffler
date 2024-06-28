@@ -31,7 +31,7 @@ fn main() -> io::Result<()> {
     let len = paths.len();
     println!("found {len} files");
     let mut rng = thread_rng();
-    spawn(move || {
+    spawn(move || loop {
         sleep(Duration::from_secs(1));
         print!(
             "\rRenamed {} / {len} files",
