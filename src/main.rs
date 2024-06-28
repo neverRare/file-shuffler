@@ -1,4 +1,5 @@
 use clap::Parser;
+use human_panic::setup_panic;
 use rand::{thread_rng, Rng};
 use std::{
     env::current_dir,
@@ -24,6 +25,7 @@ struct Args {
     path: PathBuf,
 }
 fn main() -> ExitCode {
+    setup_panic!();
     let path = Args::parse().path;
     let target = current_dir().unwrap().join(path);
     // TODO: use try_collect if stable
