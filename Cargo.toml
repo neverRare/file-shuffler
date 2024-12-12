@@ -4,8 +4,8 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-clap = { version = "4.5.7", features = ["derive"] }
-human-panic = "2.0.0"
+clap = { version = "4.5.23", features = ["derive"] }
+human-panic = "2.0.2"
 rand = "0.8.5"
 
 [profile.release]
